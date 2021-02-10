@@ -22,7 +22,7 @@ public class MapGenerator : MonoBehaviour
         if (transform.Find(holderName))
         {
             //Destroy old tiles
-            //DestroyImmediate(transform.Find(holderName).gameObject);
+            DestroyImmediate(transform.Find(holderName).gameObject);
         }
 
         Transform mapHolder = new GameObject(holderName).transform;
