@@ -57,7 +57,6 @@ public class PlayerMotor : MonoBehaviour
         {
             MoveToPoint(target.position);
             FaceTarget();
-            Debug.Log(agent.remainingDistance);
 
             if (agent.pathStatus == NavMeshPathStatus.PathComplete && agent.remainingDistance < 0.1)
                 anim.SetBool("isRunning", false);

@@ -35,8 +35,7 @@ public class Inventory : MonoBehaviour
 
     bool inventoryOpen = false;
     bool chestOpen = false;
-
-    public GameObject materializedObject = null;
+    int equippedItem = -1;
 
     void Start()
     {
@@ -87,6 +86,12 @@ public class Inventory : MonoBehaviour
             }
         }
 
+    }
+
+    public void Equip(int index)
+    {
+        ObjectSpawner.instance.VisualizeObject(GetItem(index));
+        equippedItem = index;
     }
 
     public void Select (int index)
@@ -263,6 +268,20 @@ public class Inventory : MonoBehaviour
         
         return true;
     }
+    public void Remove()
+    {
+        if (slots[equippedItem] != null)
+        {
+            slots[equippedItem] = null;
+            items_count[equippedItem] = 0;
+            space_count--;
+
+            if (onItemChangedCallback != null)
+                onItemChangedCallback.Invoke();
+        }
+
+        Equip(equippedItem);
+    }
 
     public void Remove(int index)
     {
@@ -329,42 +348,6 @@ public class Inventory : MonoBehaviour
     {
         inventoryOpen = true;
     }
-
-    
-    public void Equip(int index)
-    {
-        if (materializedObject != null)
-        {
-            Unequip();
-            return;
-        }
-
-        Item item = GetItem(index);
-        if (item == null)
-            return;
-
-        if (item.isPlaceable)
-        {
-
-        }
-        else if (item.isGun)
-        {
-
-        }
-        else
-        {
-            materializedObject = Instantiate(GetItem(index).model, gameObject.transform, true);
-
-
-            materializedObject.transform.position = item.materializedPlacement + gameObject.transform.position;
-            materializedObject.transform.rotation = transform.rotation;
-        }
-    }
-
-    public void Unequip()
-    {
-        Destroy(materializedObject);
-    }
-
+ 
         
 }

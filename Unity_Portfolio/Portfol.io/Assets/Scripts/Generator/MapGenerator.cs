@@ -114,10 +114,10 @@ public class MapGenerator : MonoBehaviour
 
 
                 //Tile generation
-                Vector3 tilePosition = new Vector3(-mapSize.x / 2 + 0.5f + x, 0, -mapSize.y / 2 + 0.5f + y);
-                Transform newTile = Instantiate(tilePrefab, tilePosition, Quaternion.Euler(Vector3.right * 90)) as Transform;
-                newTile.localScale = Vector3.one * (1 - outlinePercent);
-                newTile.parent = mapHolder;
+                //Vector3 tilePosition = new Vector3(-mapSize.x / 2 + 0.5f + x, 0, -mapSize.y / 2 + 0.5f + y);
+                //Transform newTile = Instantiate(tilePrefab, tilePosition, Quaternion.Euler(Vector3.right * 90)) as Transform;
+                //newTile.localScale = Vector3.one * (1 - outlinePercent);
+                //newTile.parent = mapHolder;
             }
         }
     }

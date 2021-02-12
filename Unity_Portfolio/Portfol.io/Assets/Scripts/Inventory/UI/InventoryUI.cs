@@ -64,6 +64,12 @@ public class InventoryUI : MonoBehaviour
 
     public void HighlightSlot(int index)
     {
+        if (highlightedSlot == index)
+        {
+            DimSlot();
+            return;
+        }
+
         DimSlot();
         barUI.transform.GetChild(index).GetChild(0).gameObject.transform.localScale = new Vector3(1.1f,1.1f,1.1f);
         highlightedSlot = index;

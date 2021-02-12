@@ -56,6 +56,13 @@ public class PlayerController : MonoBehaviour
                 {
                     SetFocus(interactable);
                 }
+
+                //Place object in the world.
+                if (ObjectSpawner.instance.buildingObject != null)
+                {
+                    ObjectSpawner.instance.Place();
+                    Inventory.instance.Remove();
+                }
             }
 
             //Right click - Movement
