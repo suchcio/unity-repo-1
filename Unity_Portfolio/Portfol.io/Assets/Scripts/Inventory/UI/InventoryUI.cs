@@ -34,7 +34,46 @@ public class InventoryUI : MonoBehaviour
     InventorySlot[] slots;
     InventorySlot[] bar_slots;
 
+    int highlightedSlot = -1;
+
     private bool isHidden = true;
+
+    public void Update()
+    {
+        if (Input.GetKeyDown("1"))
+        {
+            HighlightSlot(0);
+        }
+        if (Input.GetKeyDown("2"))
+        {
+            HighlightSlot(1);
+        }
+        if (Input.GetKeyDown("3"))
+        {
+            HighlightSlot(2);
+        }
+        if (Input.GetKeyDown("4"))
+        {
+            HighlightSlot(3);
+        }
+        if (Input.GetKeyDown("5"))
+        {
+            HighlightSlot(4);
+        }
+    }
+
+    public void HighlightSlot(int index)
+    {
+        DimSlot();
+        barUI.transform.GetChild(index).GetChild(0).gameObject.transform.localScale = new Vector3(1.1f,1.1f,1.1f);
+        highlightedSlot = index;
+    }
+
+    public void DimSlot()
+    {
+        if(highlightedSlot != -1)
+            barUI.transform.GetChild(highlightedSlot).GetChild(0).gameObject.transform.localScale = new Vector3(1, 1, 1);
+    }
 
     public void SwitchUI()
     {

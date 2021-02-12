@@ -9,11 +9,14 @@ using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
+    public delegate void OnFocusChanged(Interactable newFocus);
+    public OnFocusChanged onFocusChangedCallback;
+    public Interactable focus;
+
     public GameObject waila = null;
     public Item item = null;
     public LayerMask whatCanBeClickedOn;
-    public Interactable focus;
-    public PlayerMotor motor;
+    PlayerMotor motor;
     Interactable interactable = null;
     bool wailaDisplayActive = false;
     
@@ -22,7 +25,7 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         Cursor.lockState = CursorLockMode.Confined;
-       //myAgent = character.GetComponent<NavMeshAgent>();
+        motor = GetComponent<PlayerMotor>();
     }
 
     void Update()
@@ -58,74 +61,71 @@ public class PlayerController : MonoBehaviour
             //Right click - Movement
             if (Input.GetMouseButtonDown(1))
             {
-                    RemoveFocus();
-                    motor.MoveToPoint(hit.point);
-                
+                SetFocus(null);
+                motor.MoveToPoint(hit.point);
             }
         }
         
         if (Input.GetKeyDown("1"))
         {
-            //Inventory.instance.Equip(0);
+            Inventory.instance.Equip(0);
         }
         if (Input.GetKeyDown("2"))
         {
-            //Inventory.instance.Equip(1);
+            Inventory.instance.Equip(1);
         }
         if (Input.GetKeyDown("3"))
         {
-            //Inventory.instance.Equip(2);
+            Inventory.instance.Equip(2);
         }
         if (Input.GetKeyDown("4"))
         {
-            //Inventory.instance.Equip(3);
+            Inventory.instance.Equip(3);
         }
         if (Input.GetKeyDown("5"))
         {
-            //Inventory.instance.Equip(4);
+            Inventory.instance.Equip(4);
         }
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            RemoveFocus();
+            SetFocus(null);
             motor.MoveToPoint(gameObject.transform.position);
         }
 
     }
 
-    private void OnTriggerEnter(Collider other)
+    //private void OnTriggerEnter(Collider other)
+    //{
+    //    motor.MoveToPoint(gameObject.transform.position);
+    //    motor.StopFollowingTarget();
+    //}
+
+    // Set our focus to a new focus
+    public void SetFocus(Interactable newFocus)
     {
-        Debug.Log("On trigger");
-    }
-    void SetFocus(Interactable newFocus)
-    {
-        //If new focus is different this time.
-        if(newFocus != focus)
+        if (onFocusChangedCallback != null)
+            onFocusChangedCallback.Invoke(newFocus);
+
+        // If our focus has changed
+        if (focus != newFocus && focus != null)
         {
-            //If we already focus on something else
-            if (focus != null)
-                //Remove focus on old item
-                focus.onDefocused();
-            //Set new focus
-            focus = newFocus;
-            //Follow new focus
-            motor.FollowTarget(newFocus);
+            // Let our previous focus know that it's no longer being focused
+            focus.OnDefocused();
         }
-        //Focus on new
-        newFocus.onFocused(transform);
-        
-    }
-    void RemoveFocus()
-    {
-        //If we already focus on something else
+
+        // Set our focus to what we hit
+        // If it's not an interactable, simply set it to null
+        focus = newFocus;
+
         if (focus != null)
         {
-            //Remove focus on old item
-            focus.onDefocused();
+            // Let our focus know that it's being focused
+            focus.OnFocused(transform);
         }
-        focus = null;
-        motor.StopFollowingTarget();
+
     }
+
     void Highlight()
     {
 

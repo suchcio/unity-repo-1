@@ -36,7 +36,7 @@ public class Inventory : MonoBehaviour
     bool inventoryOpen = false;
     bool chestOpen = false;
 
-    public GameObject chosenObject = null;
+    public GameObject materializedObject = null;
 
     void Start()
     {
@@ -330,10 +330,10 @@ public class Inventory : MonoBehaviour
         inventoryOpen = true;
     }
 
-    /*  Physically spawn item near your character
+    
     public void Equip(int index)
     {
-        if (chosenObject != null)
+        if (materializedObject != null)
         {
             Unequip();
             return;
@@ -342,21 +342,29 @@ public class Inventory : MonoBehaviour
         Item item = GetItem(index);
         if (item == null)
             return;
-        
-        Vector3 startingPosition = new Vector3(-0.294f, 0.5f, -0.678f);
-        Quaternion startingRotation = new Quaternion(0, 180, 0, 0);
 
-        chosenObject = Instantiate(GetItem(index).model, gameObject.transform, true);
-        chosenObject.transform.position = startingPosition + gameObject.transform.position;
-        chosenObject.transform.rotation = startingRotation;
+        if (item.isPlaceable)
+        {
+
+        }
+        else if (item.isGun)
+        {
+
+        }
+        else
+        {
+            materializedObject = Instantiate(GetItem(index).model, gameObject.transform, true);
+
+
+            materializedObject.transform.position = item.materializedPlacement + gameObject.transform.position;
+            materializedObject.transform.rotation = transform.rotation;
+        }
     }
 
     public void Unequip()
     {
-        Destroy(chosenObject);
+        Destroy(materializedObject);
     }
-
-    */
 
         
 }

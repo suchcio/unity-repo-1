@@ -13,6 +13,8 @@ public class InventorySlot : MonoBehaviour
     Item item;
     public bool selected = false;
 
+    
+
     public void Start()
     {
         index = GetIndex();
@@ -57,4 +59,5 @@ public class InventorySlot : MonoBehaviour
     {
         tmp.GetComponent<TextMeshProUGUI>().SetText(count+"");
     }
+
 }
