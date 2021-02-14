@@ -9,12 +9,13 @@ using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
-    public delegate void OnFocusChanged(Interactable newFocus);
+    public delegate void OnFocusChanged(Interactable newFocus);*
     public OnFocusChanged onFocusChangedCallback;
     public Interactable focus;
 
     public GameObject waila = null;
     public Item item = null;
+    bool isDragActive = false;
     public LayerMask whatCanBeClickedOn;
     PlayerMotor motor;
     Interactable interactable = null;
