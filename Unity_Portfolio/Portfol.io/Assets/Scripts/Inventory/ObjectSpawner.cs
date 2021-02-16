@@ -1,6 +1,10 @@
+using cakeslice;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class ObjectSpawner : MonoBehaviour
 {
@@ -21,24 +25,37 @@ public class ObjectSpawner : MonoBehaviour
 
     GameObject player = null;
     public GameObject materializedObject = null;
-    public GameObject buildingObject = null;
+    public GameObject[] buildingObjects = null;
+    Camera cam;
 
+    public MapGenerator mapGenerator;
     public LayerMask ground;
+    Vector3 holdPoint;
     Vector3 newPos;
+    Item equippedItem;
+
+    bool buildingWall = false;
+
+    private void Start()
+    {
+        cam = Camera.main;
+        holdPoint = new Vector3(0.1f, 0.1f, 0.1f);
+    }
 
     void Update()
     {
         //Refresh holograph on grid
-        if(buildingObject != null)
+        if(buildingObjects.Length >= 1)
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit, 100, ground))
             {
                 int x = (int) Mathf.Round(hit.point.x);
                 int z = (int) Mathf.Round(hit.point.z);
                 newPos = new Vector3(x, 0.1f, z);
-                buildingObject.transform.position = newPos;
+                //Move object 1 together with mouse cursor.
+                buildingObjects[0].transform.position = newPos;
             }
         }
     }
@@ -52,15 +69,66 @@ public class ObjectSpawner : MonoBehaviour
     {
         GameObject newObject = Instantiate(materializedObject, gameObject.transform, true);
         newObject.transform.position = position;
+        newObject.GetComponent<Interactable>().enabled = true;
+    }
+    
+    public void VisualizeWall()
+    {
+        buildingWall = true;
+
+        if (buildingObjects.Length == 0)
+        {
+            StopCoroutine("HoldInteract");
+            return;
+        }
+        Ray myRay = cam.ScreenPointToRay(Mouse.current.position.ReadValue());
+        RaycastHit hit;
+        if (Physics.Raycast(myRay, out hit, 100))
+        { 
+            int x = (int)Mathf.Round(hit.point.x);
+            int z = (int)Mathf.Round(hit.point.z);
+            if (holdPoint == new Vector3(0.1f, 0.1f, 0.1f))
+                holdPoint = new Vector3(x, 0.1f, z);
+            Vector3 newPoint = new Vector3(x, 0.1f, z);
+
+            if(holdPoint != newPoint)
+            {
+                Debug.Log("Different location .. spawning objects");
+                int index = 0;
+                var list = MapGenerator.GetPointsOnLine(holdPoint, new Vector3(x, 0.1f, z));
+
+                // Destroy all objects on loop
+                DevisualizeHolographedObjects();
+
+                // Recover mouse aligned object
+                VisualizeObject(equippedItem);
+                buildingObjects[0].transform.position = newPoint;
+
+                foreach (var val in list.ToList())
+                {
+                    //Spawn objects
+                    VisualizeObject(equippedItem);
+                    //Update positions for all new walls
+                    buildingObjects[index++].transform.position = val;
+                }
+            }
+        }
     }
 
     public void VisualizeObject(Item item)
     {
+        equippedItem = item;
+
         player = Inventory.instance.gameObject.transform.parent.gameObject;
-        if (materializedObject != null)
+        if (materializedObject != null && !buildingWall)
         {
-            DevisualizeObject();
+            DevisualizeHolographedObjects();
             return;
+        }
+
+        if (equippedItem == null)
+        {
+            equippedItem = item;
         }
 
         if (item == null)
@@ -68,16 +136,29 @@ public class ObjectSpawner : MonoBehaviour
 
         if (item.isPlaceable)
         {
-            // Carried object
-            materializedObject = Instantiate(item.model, Inventory.instance.transform, true);
-            materializedObject.transform.position = player.transform.forward * 1 + player.transform.position + item.materializedPlacement;
-            materializedObject.GetComponent<Interactable>().enabled = false;
-            // Rotation doesnt matter for Placeable items
-            //Inventory.instance.gameObject.transform.rotation = player.transform.rotation;
+            
+            //Carried object
+            if(buildingObjects.Length == 0)
+            {
+                materializedObject = Instantiate(equippedItem.model, Inventory.instance.transform, true);
+                materializedObject.transform.position = player.transform.forward * 1 + player.transform.position + equippedItem.materializedPlacement;
+                materializedObject.GetComponent<Interactable>().enabled = false;
+                buildingObjects = new GameObject[1];
+            }
+            else
+            {
+                Array.Resize(ref buildingObjects, buildingObjects.Length + 1);
+
+                //Preparing holograph outline in holograph
+                var outlines = equippedItem.model.GetComponentsInChildren<Outline>();
+                foreach (var outline in outlines)
+                    outline.enabled = true;
+            }
 
             //Building holograph
-            buildingObject = Instantiate(item.model, gameObject.transform, true);
-            buildingObject.GetComponent<Interactable>().enabled = false;
+            buildingObjects[buildingObjects.Length - 1] = Instantiate(equippedItem.model, gameObject.transform, true);
+            buildingObjects[buildingObjects.Length - 1].GetComponent<Interactable>(); // Slow change to item.model.interactable instead
+            //interactable.enabled = false;
 
         }
         else if (item.isGun)
@@ -92,9 +173,17 @@ public class ObjectSpawner : MonoBehaviour
         }
     }
 
-    public void DevisualizeObject()
+    public void DevisualizeHolographedObjects()
+    {
+        foreach(var obj in buildingObjects){
+            Destroy(obj);
+        }
+        buildingObjects = new GameObject[0];
+    }
+
+    public void DevisualizeMaterializedObject()
     {
         Destroy(materializedObject);
-        Destroy(buildingObject);
+        materializedObject = null;
     }
 }

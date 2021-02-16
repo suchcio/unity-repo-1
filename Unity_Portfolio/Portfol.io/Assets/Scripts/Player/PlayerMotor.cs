@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(NavMeshAgent))]
 [RequireComponent(typeof(PlayerController))]
@@ -10,10 +11,12 @@ public class PlayerMotor : MonoBehaviour
 
     Transform target;
     NavMeshAgent agent;
+    Camera cam;
     private Animator anim;
 
     void Start()
     {
+        cam = Camera.main;
         agent = GetComponent<NavMeshAgent>();
         anim = transform.Find("KnightCharacter").GetComponent<Animator>();
         GetComponent<PlayerController>().onFocusChangedCallback += OnFocusChanged;
@@ -24,6 +27,16 @@ public class PlayerMotor : MonoBehaviour
     public void MoveToPoint(Vector3 point)
     {
         agent.SetDestination(point);
+    }
+
+    public void MoveToMousePosition()
+    {
+        Ray myRay = cam.ScreenPointToRay(Mouse.current.position.ReadValue());
+        RaycastHit hit;
+        if (Physics.Raycast(myRay, out hit, 100))
+        {
+            MoveToPoint(hit.point);
+        }
     }
 
     void OnFocusChanged(Interactable newFocus)

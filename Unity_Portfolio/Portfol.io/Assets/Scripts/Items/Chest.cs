@@ -15,7 +15,7 @@ public class Chest : Interactable
         Open();
     }
 
-    void Update()
+    public override void Update()
     {
         base.Update();
         //Debug.Log(base.isFocus + " " + isOpen);
@@ -32,15 +32,24 @@ public class Chest : Interactable
         }
         Inventory.instance.ConnectExtension(ext);
         Inventory.instance.OpenInventory();
+
+
         InventoryUI.instance.Show();
         isOpen = true;
     }
 
     void Close()
     {
-        Debug.Log("Closing...");
-        //Inventory.instance.ConnectExtension(null);
         InventoryUI.instance.Hide();
+
+        Inventory.instance.ConnectExtension(null);
         isOpen = false;
+    }
+
+    public override void OnDefocused()
+    {
+        base.OnDefocused();
+        Close();
+
     }
 }

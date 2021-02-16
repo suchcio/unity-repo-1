@@ -5,14 +5,11 @@ using UnityEngine;
 public class Teleporter : Interactable
 {
     public bool isUsable = false;
-    public Transform player = null;
     public Transform destination = null;
 
     public override void Interact()
     {
         base.Interact();
-
-        player = base.player;
         Teleport();
     }
 

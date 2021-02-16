@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor.AI;
+using System.Linq;
 
 public class MapGenerator : MonoBehaviour
 {
@@ -15,11 +16,8 @@ public class MapGenerator : MonoBehaviour
     void Start()
     {
         Transform HolderWall = CreateHolder("Walls");
-        GenerateWall(new Vector3(10, 0, 10), new Vector3(20, 0, 20), HolderWall);
-        GenerateWall(new Vector3(15, 0, 15), new Vector3(20, 0, 15), HolderWall);
-        GenerateWall(new Vector3(25, 0, 5), new Vector3(25, 0, 15), HolderWall);
 
-        GenerateMap();
+        GenerateMapWithRotation();
         //NavMeshBuilder.BuildNavMesh();
     }
     Transform CreateHolder(string HolderName)
@@ -33,7 +31,7 @@ public class MapGenerator : MonoBehaviour
         return mapHolder;
     }
 
-    void GenerateWall(Vector3 pointA, Vector3 pointB, Transform Holder)
+    void GenerateBoxWithRotation(Vector3 pointA, Vector3 pointB, Transform Holder)
     {
         float directionX = 0, directionZ = 0;
         float distanceX = pointB.x - pointA.x;
@@ -69,8 +67,60 @@ public class MapGenerator : MonoBehaviour
 
     }
 
+    public static IEnumerable<Vector3> GetPointsOnLine(Vector3 pointA, Vector3 pointB)
+    {
+        //http://ericw.ca/notes/bresenhams-line-algorithm-in-csharp.html
+        bool steep = Mathf.Abs(pointB.z - pointA.z) > Mathf.Abs(pointB.x - pointA.x);
+        if (steep)
+        {
+            float t;
+            t = pointA.x; // swap pointA.x and pointA.z
+            pointA.x = pointA.z;
+            pointA.z = t;
+            t = pointB.x; // swap pointB.x and pointB.z
+            pointB.x = pointB.z;
+            pointB.z = t;
+        }
+        if (pointA.x > pointB.x)
+        {
+            float t;
+            t = pointA.x; // swap pointA.x and pointB.x
+            pointA.x = pointB.x;
+            pointB.x = t;
+            t = pointA.z; // swap pointA.z and pointB.z
+            pointA.z = pointB.z;
+            pointB.z = t;
+        }
+        float dx = pointB.x - pointA.x;
+        float dy = Mathf.Abs(pointB.z - pointA.z);
+        float error = dx / 2;
+        float ystep = (pointA.z < pointB.z) ? 1 : -1;
+        float y = pointA.z;
+        for (int x = (int) pointA.x; x <= pointB.x; x++)
+        {
+            yield return new Vector3((steep ? y : x), 0, (steep ? x : y));
+            error = error - dy;
+            if (error < 0)
+            {
+                y += ystep;
+                error += dx;
+            }
+        }
+        yield break;
+    }
 
-    public void GenerateMap()
+    public void GenerateWall(Vector3 pointA, Vector3 pointB, Transform Holder)
+    {
+        var list = GetPointsOnLine(pointA, pointB);
+        foreach (var val in list.ToList())
+        {
+            Transform newWall = Instantiate(wallPrefab, val, Quaternion.identity);
+            newWall.parent = Holder;
+        }
+    }
+
+
+    public void GenerateMapWithRotation()
     {
 
         string holderName = "Generated Map";

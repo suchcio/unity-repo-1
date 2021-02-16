@@ -11,6 +11,6 @@ public class MapEditor : Editor
         base.OnInspectorGUI();
         MapGenerator map = target as MapGenerator;
 
-        map.GenerateMap();
+        map.GenerateMapWithRotation();
     }
 }

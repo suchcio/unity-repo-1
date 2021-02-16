@@ -52,41 +52,40 @@ public class Inventory : MonoBehaviour
         return false;
     }
 
-    void Update()
-    {
-        //"I" - Hide/Show UI
-        if (Input.GetButtonDown("Inventory"))
-        {
-            if (!inventoryOpen)
-            {
-                inventoryUI.Show();
-                inventoryOpen = true;
-            }
-            else
-            {
-                inventoryUI.Hide();
-                inventoryOpen = false;
-                if (chestOpen)
-                {
-                    ConnectExtension(null);
-                }
-            }
-        }
-        //"ESC" - Hide UI
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            if (inventoryOpen)
-            {
-                inventoryUI.Hide();
-                inventoryOpen = false;
-            }
-            if (chestOpen)
-            {
-                ConnectExtension(null);
-            }
-        }
+    ///{
+        ////"I" - Hide/Show UI
+        //if (Input.GetButtonDown("Inventory"))
+        //{
+        //    if (!inventoryOpen)
+        //    {
+        //        inventoryUI.Show();
+        //        inventoryOpen = true;
+        //    }
+        //    else
+        //    {
+        //        inventoryUI.Hide();
+        //        inventoryOpen = false;
+        //        if (chestOpen)
+        //        {
+        //            ConnectExtension(null);
+        //        }
+        //    }
+        //}
+        ////"ESC" - Hide UI
+        //if (Input.GetKeyDown(KeyCode.Escape))
+        //{
+        //    if (inventoryOpen)
+        //    {
+        //        inventoryUI.Hide();
+        //        inventoryOpen = false;
+        //    }
+        //    if (chestOpen)
+        //    {
+        //        ConnectExtension(null);
+        //    }
+        //}
 
-    }
+    //}
 
     public void Equip(int index)
     {

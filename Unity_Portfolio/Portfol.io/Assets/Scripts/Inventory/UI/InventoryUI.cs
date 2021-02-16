@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.InputSystem;
 
 public class InventoryUI : MonoBehaviour
 {
@@ -38,32 +38,9 @@ public class InventoryUI : MonoBehaviour
 
     private bool isHidden = true;
 
-    public void Update()
-    {
-        if (Input.GetKeyDown("1"))
-        {
-            HighlightSlot(0);
-        }
-        if (Input.GetKeyDown("2"))
-        {
-            HighlightSlot(1);
-        }
-        if (Input.GetKeyDown("3"))
-        {
-            HighlightSlot(2);
-        }
-        if (Input.GetKeyDown("4"))
-        {
-            HighlightSlot(3);
-        }
-        if (Input.GetKeyDown("5"))
-        {
-            HighlightSlot(4);
-        }
-    }
-
     public void HighlightSlot(int index)
     {
+        Debug.Log("Same");
         if (highlightedSlot == index)
         {
             DimSlot();
@@ -117,12 +94,21 @@ public class InventoryUI : MonoBehaviour
 
     public void Show()
     {
+        if (!isHidden)
+        {
+            Hide();
+            return;
+        }
         if (extensionUI != null)
+        {
             extensionUI.gameObject.SetActive(true);
+        }
         isHidden = false;
         barUI.gameObject.SetActive(false);
         mainUI.gameObject.SetActive(true);
-        PauseUI.SetActive(false);
+
+        
+        gameObject.GetComponentInParent<PauseMenu>().enabled = false;
     }
     /// <summary>
     /// If not already hidden, hide all UI and show BAR ui.
@@ -134,11 +120,11 @@ public class InventoryUI : MonoBehaviour
             isHidden = true;
             mainUI.gameObject.SetActive(false);
             barUI.gameObject.SetActive(true);
-            PauseUI.SetActive(true);
             if (extensionUI != null)
             {
                 extensionUI.gameObject.SetActive(false);
             }
+            gameObject.GetComponentInParent<PauseMenu>().enabled = true;
         }
     }
     /// <summary>

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using cakeslice;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,6 +8,7 @@ public class Interactable : MonoBehaviour
     public float radius = 3f;
     public Item item;
     public Transform interactionTransform;
+    public Outline[] outlines;
 
     public bool isFocus = false;
     public bool hasInteracted = false;
@@ -42,7 +44,7 @@ public class Interactable : MonoBehaviour
         hasInteracted = false;
     }
 
-    public void OnDefocused()
+    public virtual void OnDefocused()
     {
         isFocus = false;
         player = null;
@@ -58,5 +60,6 @@ public class Interactable : MonoBehaviour
 
     public virtual void Interact()
     {
+
     }
 }
