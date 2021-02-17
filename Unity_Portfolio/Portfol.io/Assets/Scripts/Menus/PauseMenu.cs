@@ -23,7 +23,6 @@ public class PauseMenu : MonoBehaviour {
         Keyboard kb = InputSystem.GetDevice<Keyboard>();
         if (kb.escapeKey.wasPressedThisFrame && kb.escapeKey.isPressed && !skipFrame)
         {
-            Debug.Log("Not waiter!!!");
             if (GameIsPaused)
             {
                 Resume();

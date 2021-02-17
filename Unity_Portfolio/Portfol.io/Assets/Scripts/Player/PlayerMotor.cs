@@ -45,36 +45,48 @@ public class PlayerMotor : MonoBehaviour
         if (newFocus != null)
         {
             agent.stoppingDistance = newFocus.radius;
-            agent.updateRotation = false;
-
+            //agent.updateRotation = false;
             target = newFocus.interactionTransform;
+
+            //Move without following
+            MoveToPoint(target.position);
         }
         else
         {
             agent.stoppingDistance = 0f;
-            agent.updateRotation = true;
+            //agent.updateRotation = true;
             target = null;
         }
     }
 
-    void FaceTarget()
+    void FacePosition(Vector3 position)
     {
-        Vector3 direction = (target.position - transform.position).normalized;
+        Vector3 direction = (position - transform.position).normalized;
+        Debug.Log("Position :" + position + "Direction " + direction);
         Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
         transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
     }
 
+
+
     void Update()
     {
-        if (target != null)
-        {
-            MoveToPoint(target.position);
-            FaceTarget();
+        //Uncomment this if you want perma following target.
 
-            if (agent.pathStatus == NavMeshPathStatus.PathComplete && agent.remainingDistance < 0.1)
-                anim.SetBool("isRunning", false);
-            else
-                anim.SetBool("isRunning", true);
+        //if (target != null)
+        //{
+        //   MoveToPoint(target.position);
+        //   FaceTarget();
+
+        if (agent.pathStatus == NavMeshPathStatus.PathComplete && (agent.remainingDistance <= agent.stoppingDistance) || agent.remainingDistance < 0.1)
+        {
+            anim.SetBool("isRunning", false);
         }
+        else
+        {
+            anim.SetBool("isRunning", true);
+        }
+        //}
+
     }
 }
