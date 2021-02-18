@@ -12,7 +12,20 @@ public class PresetChanger : MonoBehaviour
     string currentPreset = "outline";
     Camera outlineCamera;
 
+    #region Singleton
+    public static PresetChanger instance;
 
+    void Awake()
+    {
+        if (instance != null)
+        {
+            Debug.LogWarning("More than one instance of Inventory found!");
+            return;
+        }
+
+        instance = this;
+    }
+    #endregion
 
     public void setHolographPreset()
     {
