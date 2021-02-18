@@ -14,7 +14,6 @@ public class Item : ScriptableObject
     public bool isGun = false;
 
     public Vector3 materializedPlacement = new Vector3(0, 0, 0);
-
     public virtual void Use()
     {
         Debug.Log("Using " + name);

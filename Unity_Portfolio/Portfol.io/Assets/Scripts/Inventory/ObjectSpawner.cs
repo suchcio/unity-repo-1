@@ -74,6 +74,11 @@ public class ObjectSpawner : MonoBehaviour
     
     public void VisualizeWall()
     {
+        if (!equippedItem.isPlaceable)
+            return;
+
+        PresetChanger.instance.setHolographPreset();
+
         buildingWall = true;
 
         if (buildingObjects.Length == 0)

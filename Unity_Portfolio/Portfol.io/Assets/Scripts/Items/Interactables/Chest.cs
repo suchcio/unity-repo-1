@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Chest : Interactable
+public class Chest : Gatherable
 {
     public InventoryExtension ext;
     bool isOpen = false; //Istnienie tego boli

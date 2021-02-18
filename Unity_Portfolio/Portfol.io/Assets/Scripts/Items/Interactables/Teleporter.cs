@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Teleporter : Interactable
+public class Teleporter : Gatherable
 {
     public bool isUsable = false;
     public Transform destination = null;

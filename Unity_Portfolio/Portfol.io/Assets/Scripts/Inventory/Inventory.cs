@@ -27,6 +27,8 @@ public class Inventory : MonoBehaviour
     public InventoryExtension extension;
     public InventoryUI inventoryUI;
 
+    public Item equippedItem = null;
+
     public int space = 20;
     public Item[] slots;
     public int[] items_count;
@@ -35,7 +37,7 @@ public class Inventory : MonoBehaviour
 
     bool inventoryOpen = false;
     bool chestOpen = false;
-    int equippedItem = -1;
+    int equippedSlot = -1;
 
     void Start()
     {
@@ -89,8 +91,23 @@ public class Inventory : MonoBehaviour
 
     public void Equip(int index)
     {
-        ObjectSpawner.instance.VisualizeObject(GetItem(index));
-        equippedItem = index;
+        if(equippedSlot != index)
+        {
+            Unequip();
+        }
+
+        Item item = GetItem(index);
+        //Function handles multiplicates
+        ObjectSpawner.instance.VisualizeObject(item);
+        equippedSlot = index;
+        equippedItem = item;
+    }
+
+    void Unequip()
+    {
+        equippedSlot = -1;
+        equippedItem = null;
+        ObjectSpawner.instance.DevisualizeMaterializedObject();
     }
 
     public void Select (int index)
@@ -269,17 +286,17 @@ public class Inventory : MonoBehaviour
     }
     public void Remove()
     {
-        if (slots[equippedItem] != null)
+        if (slots[equippedSlot] != null)
         {
-            slots[equippedItem] = null;
-            items_count[equippedItem] = 0;
+            slots[equippedSlot] = null;
+            items_count[equippedSlot] = 0;
             space_count--;
 
             if (onItemChangedCallback != null)
                 onItemChangedCallback.Invoke();
         }
 
-        Equip(equippedItem);
+        Equip(equippedSlot);
     }
 
     public void Remove(int index)

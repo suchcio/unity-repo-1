@@ -40,9 +40,9 @@ public class InventoryUI : MonoBehaviour
 
     public void HighlightSlot(int index)
     {
-        Debug.Log("Same");
         if (highlightedSlot == index)
         {
+            highlightedSlot = -1;
             DimSlot();
             return;
         }

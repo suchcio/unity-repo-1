@@ -16,7 +16,6 @@ public class PlayerController : MonoBehaviour
     public Interactable focus;
     public PresetChanger outlinePreset;
     public GameObject waila = null;
-    public Item item = null;
     Camera cam;
     PlayerMotor motor;
     Interactable interactable = null;
