@@ -4,13 +4,21 @@ using UnityEngine;
 
 public class Gatherable : Interactable
 {
-    [SerializeField]
+    Animator anim;
+
     public Item[] loot;
     public int[] loot_count;
+    public float[] loot_chance;
+
     public Item gatheringTool;
 
     public int hitPoints = 10;
     public int cooldown = 1;
+
+    private void Start()
+    {
+        anim = gameObject.GetComponentInChildren<Animator>();
+    }
 
     public override void Interact()
     {
@@ -35,6 +43,12 @@ public class Gatherable : Interactable
             Debug.Log("Successfully destroyed object!");
             Destroy(transform.gameObject);
             //Create pickables
+        }
+        else
+        {
+            Debug.Log("Jump");
+            anim.ResetTrigger("Jump");
+            anim.SetTrigger("Jump");
         }
     }
 
