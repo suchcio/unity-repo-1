@@ -11,9 +11,11 @@ public class Item : ScriptableObject
     public bool isDefaultItem = false;
     public int stackSize = 100;
     public bool isPlaceable = false;
-    public bool isGun = false;
+    public bool isTool = false;
 
     public Vector3 materializedPlacement = new Vector3(0, 0, 0);
+    public Vector3 materializedRotation = new Vector3(0, 0, 0);
+
     public virtual void Use()
     {
         Debug.Log("Using " + name);

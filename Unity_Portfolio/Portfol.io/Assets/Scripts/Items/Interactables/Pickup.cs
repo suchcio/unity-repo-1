@@ -4,16 +4,25 @@ using UnityEngine;
 
 public class Pickup : Interactable
 {
-    // Start is called before the first frame update
+    public int count;
+
+    // When the player interacts with the item
     public override void Interact()
     {
         base.Interact();
-        PickUp();
+
+        PickUp();   // Pick it up!
     }
-    // Update is called once per frame
+
+    // Pick up the item
     void PickUp()
     {
-        Inventory.instance.Add(base.item,  1);
-        Destroy(gameObject);
+        Debug.Log("Picking up " + item.name);
+        bool wasPickedUp = Inventory.instance.Add(item, count);    // Add to inventory
+
+        // If successfully picked up
+        if (wasPickedUp)
+            Destroy(gameObject);    // Destroy item from scene
     }
+
 }

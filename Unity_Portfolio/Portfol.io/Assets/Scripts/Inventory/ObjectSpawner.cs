@@ -22,10 +22,11 @@ public class ObjectSpawner : MonoBehaviour
         instance = this;
     }
     #endregion
-
+    public Transform palmPlacement;
     GameObject player = null;
     public GameObject materializedObject = null;
     public GameObject[] buildingObjects = null;
+    public GameObject pickupPrefab;
     Camera cam;
 
     public MapGenerator mapGenerator;
@@ -38,6 +39,7 @@ public class ObjectSpawner : MonoBehaviour
 
     private void Start()
     {
+        player = Inventory.instance.gameObject.transform.parent.gameObject;
         cam = Camera.main;
         holdPoint = new Vector3(0.1f, 0.1f, 0.1f);
     }
@@ -71,7 +73,18 @@ public class ObjectSpawner : MonoBehaviour
         newObject.transform.position = position;
         newObject.GetComponent<Interactable>().enabled = true;
     }
-    
+
+    public void SpawnPrefab(Item item, int count, Vector3 position)
+    {
+        GameObject obj = Instantiate(pickupPrefab, transform);
+        obj.transform.position = position;
+        Pickup pickup = obj.GetComponent<Pickup>();
+        obj.GetComponentInChildren<MeshFilter>().sharedMesh = item.model.gameObject.GetComponent<MeshFilter>().sharedMesh;
+        obj.GetComponentInChildren<MeshRenderer>().sharedMaterial = item.model.gameObject.GetComponent<MeshRenderer>().sharedMaterial;
+        pickup.count = count;
+        pickup.item = item;
+    }
+
     public void VisualizeWall()
     {
         if (!equippedItem.isPlaceable)
@@ -123,8 +136,6 @@ public class ObjectSpawner : MonoBehaviour
     public void VisualizeObject(Item item)
     {
         equippedItem = item;
-
-        player = Inventory.instance.gameObject.transform.parent.gameObject;
         if (materializedObject != null && !buildingWall)
         {
             DevisualizeHolographedObjects();
@@ -166,16 +177,27 @@ public class ObjectSpawner : MonoBehaviour
             //interactable.enabled = false;
 
         }
-        else if (item.isGun)
+        else if (item.isTool)
         {
-
+            Debug.Log(Quaternion.Euler(item.materializedRotation) + "   " + item.materializedRotation);
+            //materializedObject = Instantiate(item.model, palmPlacement.transform.position + item.materializedPlacement, Quaternion.Euler(item.materializedRotation + palmPlacement.rotation.eulerAngles), palmPlacement.transform );
+            materializedObject = Instantiate(item.model, palmPlacement.transform);
+            //0,0,0 position
+            materializedObject.transform.rotation = Quaternion.Euler(palmPlacement.rotation.eulerAngles);
+            //rotate to set position
+            materializedObject.transform.Rotate(item.materializedRotation);
+            materializedObject.transform.localScale = new Vector3(0.01f, 0.01f, 0.01f);
+            player.GetComponentInChildren<Animator>().SetBool("hasWeapon", true);
         }
         else
         {
-            materializedObject = Instantiate(item.model, gameObject.transform, true);
-            materializedObject.transform.position = item.materializedPlacement + gameObject.transform.position;
-            materializedObject.transform.rotation = transform.rotation;
         }
+    }
+
+    public void RevisualizeObject()
+    {
+        DevisualizeMaterializedObject();
+        VisualizeObject(equippedItem);
     }
 
     public void DevisualizeHolographedObjects()
@@ -188,7 +210,14 @@ public class ObjectSpawner : MonoBehaviour
 
     public void DevisualizeMaterializedObject()
     {
-        Destroy(materializedObject);
+        DestroyImmediate(materializedObject);
         materializedObject = null;
+        player.GetComponentInChildren<Animator>().SetBool("hasWeapon", false);
+    }
+
+    private void OnDisable()
+    {
+        DevisualizeHolographedObjects();
+        DevisualizeMaterializedObject();
     }
 }
