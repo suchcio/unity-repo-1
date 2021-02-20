@@ -64,10 +64,10 @@ public class ObjectSpawner : MonoBehaviour
 
     public void Place()
     {
-        SpawnObject(newPos);
+        SpawnInteractable(newPos);
     }
 
-    public void SpawnObject(Vector3 position)
+    public void SpawnInteractable(Vector3 position)
     {
         GameObject newObject = Instantiate(materializedObject, gameObject.transform, true);
         newObject.transform.position = position;
