@@ -44,6 +44,9 @@ public class Inventory : MonoBehaviour
         space_count = 0;
         slots = new Item[space];
         items_count = new int[space];
+
+        //Unequips items when items changed
+        onItemChangedCallback += RefreshEquippedItem;
     }
     
 
@@ -91,10 +94,7 @@ public class Inventory : MonoBehaviour
 
     public void Equip(int index)
     {
-        if(equippedSlot != index)
-        {
-            Unequip();
-        }
+        Unequip();
 
         Item item = GetItem(index);
         //Function handles multiplicates
@@ -108,6 +108,12 @@ public class Inventory : MonoBehaviour
         equippedSlot = -1;
         equippedItem = null;
         ObjectSpawner.instance.DevisualizeMaterializedObject();
+        ObjectSpawner.instance.DevisualizeHolographedObjects();
+    }
+
+    void RefreshEquippedItem()
+    {
+        Equip(equippedSlot);
     }
 
     public void Select (int index)

@@ -87,7 +87,7 @@ public class ObjectSpawner : MonoBehaviour
 
     public void VisualizeWall()
     {
-        if (!equippedItem.isPlaceable)
+        if (!(equippedItem is Placeable))
             return;
 
         PresetChanger.instance.setHolographPreset();
@@ -150,7 +150,7 @@ public class ObjectSpawner : MonoBehaviour
         if (item == null)
             return;
 
-        if (item.isPlaceable)
+        if (item is Placeable)
         {
             
             //Carried object
@@ -177,7 +177,8 @@ public class ObjectSpawner : MonoBehaviour
             //interactable.enabled = false;
 
         }
-        else if (item.isTool)
+        else if (item.GetType().IsSubclassOf(typeof(Tool))) //item.GetType().ToString() == "Tool"
+
         {
             Debug.Log(Quaternion.Euler(item.materializedRotation) + "   " + item.materializedRotation);
             //materializedObject = Instantiate(item.model, palmPlacement.transform.position + item.materializedPlacement, Quaternion.Euler(item.materializedRotation + palmPlacement.rotation.eulerAngles), palmPlacement.transform );
@@ -191,10 +192,11 @@ public class ObjectSpawner : MonoBehaviour
         }
         else
         {
+            Debug.Log(item.GetType());
         }
     }
 
-    public void RevisualizeObject()
+    public void RevisualizeObject() 
     {
         DevisualizeMaterializedObject();
         VisualizeObject(equippedItem);
