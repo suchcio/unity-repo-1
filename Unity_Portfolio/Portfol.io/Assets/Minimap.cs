@@ -18,17 +18,15 @@ public class Minimap : MonoBehaviour
 
     IEnumerator GenerateMapRoutine()
     {
-        Debug.Log("Test");
         ClearMap();
         if(levelGen.map != null)
             GenerateMap();
-        yield return new WaitForSeconds(5);
+        yield return new WaitForSeconds(60);
         yield return GenerateMapRoutine();
     }
     void ClearMap()
     {
         foreach(Transform obj in holder.transform){
-            Debug.Log("Destroy");
             Destroy(obj.gameObject);
         }
     }

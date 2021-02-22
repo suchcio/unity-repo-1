@@ -63,7 +63,6 @@ public class InputGameplay : MonoBehaviour
 
     IEnumerator HoldInteract()
     {
-        Debug.Log("Building wall");
         holdinteract.Invoke();
         yield return new WaitForSeconds(0.1f);
         yield return HoldInteract();
