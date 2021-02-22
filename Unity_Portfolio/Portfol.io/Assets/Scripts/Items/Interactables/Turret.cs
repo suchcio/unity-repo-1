@@ -74,28 +74,23 @@ public class Turret : Gatherable
         line.SetPosition(0, vertical.transform.position);
         line.SetPosition(1, vertical.transform.position + visTargetPoint);
 
-        //if (Physics.Raycast(transform.position + new Vector3(0, 0.5f, 0), rayTargetPoint.normalized, out hit, range))// && hit.transform.tag == "Enemy")
-        //{
-        //    hit.collider.gameObject.GetComponent<Renderer>().material.color = new Color(0, 0, 1f);
-        //}
-
         for(int i = -hitAngle; i <= hitAngle; i++)
         {
-            //If I want to NOT have circular segment in Raycast.
-            rayTargetPoint = (range - (1 - Mathf.Cos(Mathf.Deg2Rad/2 * (-i + Mathf.Abs(hitAngle))))) * -vertical.transform.up;
-            //
+            //If I want to NOT have circular segment in Raycast. For some reason its broken https://planetcalc.com/1421/
+            //rayTargetPoint = (range - (1 - Mathf.Cos(Mathf.Deg2Rad/2 * (-i + Mathf.Abs(hitAngle))))) * -vertical.transform.up;
 
             Vector3 rotatedRayTargetPoint = Quaternion.AngleAxis(i/2, Vector3.up) * rayTargetPoint;
 
-            if (Physics.Raycast(transform.position + new Vector3(0, 0.5f, 0), rotatedRayTargetPoint.normalized, out hit, range))// && hit.transform.tag == "Enemy")
+            //Multiple raycasts
+            hits = Physics.RaycastAll(transform.position + new Vector3(0, 0.5f, 0), rotatedRayTargetPoint.normalized, range);
+            if(hits.Length > 0)
+            //Single raycast
+            //if (Physics.Raycast(transform.position + new Vector3(0, 0.5f, 0), rotatedRayTargetPoint.normalized, out hit, range))// && hit.transform.tag == "Enemy") -
             {
-                hit.collider.gameObject.GetComponent<Renderer>().material.color = new Color(0, 0, 1f);
+                foreach(var hitt in hits)
+                    hitt.collider.gameObject.GetComponent<Renderer>().material.color = new Color(0, 0, 1f);
             }
         }
-
-        //Visual representation in Scene view
-        //Debug.DrawLine(transform.position + new Vector3(0, 1, 0),  transform.position + new Vector3(range * vertical.transform.forward.normalized.x, 1, range * vertical.transform.forward.normalized.z), new Color(255, 0, 0), 1f);
-        //Debug.Log($"Location of target {transform.position + new Vector3(range * vertical.transform.localRotation.eulerAngles.x, vertical.transform.localRotation.eulerAngles.y, range * vertical.transform.localRotation.eulerAngles.z)}");
     }
 
     void FindNearestEnemy()
