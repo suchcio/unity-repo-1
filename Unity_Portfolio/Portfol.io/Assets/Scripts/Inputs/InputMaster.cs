@@ -304,6 +304,33 @@ public class @InputMaster : IInputActionCollection, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""UI"",
+            ""id"": ""6d7aafda-c980-4648-b425-9dbe9a93a1da"",
+            ""actions"": [
+                {
+                    ""name"": ""CLICK"",
+                    ""type"": ""Button"",
+                    ""id"": ""8713b644-ab5c-46a5-90ba-a1354c5ff3f3"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""081ab51a-862b-4625-a88a-92ff9be6f51f"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": ""Press(behavior=1)"",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CLICK"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -383,6 +410,9 @@ public class @InputMaster : IInputActionCollection, IDisposable
         m_Player_HoldWalk = m_Player.FindAction("HoldWalk", throwIfNotFound: true);
         m_Player_PressRelease = m_Player.FindAction("PressRelease", throwIfNotFound: true);
         m_Player_HoldInteract = m_Player.FindAction("HoldInteract", throwIfNotFound: true);
+        // UI
+        m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
+        m_UI_CLICK = m_UI.FindAction("CLICK", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -549,6 +579,39 @@ public class @InputMaster : IInputActionCollection, IDisposable
         }
     }
     public PlayerActions @Player => new PlayerActions(this);
+
+    // UI
+    private readonly InputActionMap m_UI;
+    private IUIActions m_UIActionsCallbackInterface;
+    private readonly InputAction m_UI_CLICK;
+    public struct UIActions
+    {
+        private @InputMaster m_Wrapper;
+        public UIActions(@InputMaster wrapper) { m_Wrapper = wrapper; }
+        public InputAction @CLICK => m_Wrapper.m_UI_CLICK;
+        public InputActionMap Get() { return m_Wrapper.m_UI; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(UIActions set) { return set.Get(); }
+        public void SetCallbacks(IUIActions instance)
+        {
+            if (m_Wrapper.m_UIActionsCallbackInterface != null)
+            {
+                @CLICK.started -= m_Wrapper.m_UIActionsCallbackInterface.OnCLICK;
+                @CLICK.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnCLICK;
+                @CLICK.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnCLICK;
+            }
+            m_Wrapper.m_UIActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+                @CLICK.started += instance.OnCLICK;
+                @CLICK.performed += instance.OnCLICK;
+                @CLICK.canceled += instance.OnCLICK;
+            }
+        }
+    }
+    public UIActions @UI => new UIActions(this);
     private int m_KeyboardMouseSchemeIndex = -1;
     public InputControlScheme KeyboardMouseScheme
     {
@@ -608,5 +671,9 @@ public class @InputMaster : IInputActionCollection, IDisposable
         void OnHoldWalk(InputAction.CallbackContext context);
         void OnPressRelease(InputAction.CallbackContext context);
         void OnHoldInteract(InputAction.CallbackContext context);
+    }
+    public interface IUIActions
+    {
+        void OnCLICK(InputAction.CallbackContext context);
     }
 }

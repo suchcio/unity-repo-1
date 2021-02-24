@@ -95,7 +95,7 @@ public class Inventory : MonoBehaviour
     public void Equip(int index)
     {
         Unequip();
-
+        Debug.Log(index);
         Item item = GetItem(index);
         //Function handles multiplicates
         ObjectSpawner.instance.VisualizeObject(item);
@@ -113,7 +113,8 @@ public class Inventory : MonoBehaviour
 
     void RefreshEquippedItem()
     {
-        Equip(equippedSlot);
+        if(equippedSlot != -1)
+            Equip(equippedSlot);
     }
 
     public void Select (int index)

@@ -29,6 +29,7 @@ public class PlayerController : MonoBehaviour
         cam = Camera.main;
         Cursor.lockState = CursorLockMode.Confined;
         motor = GetComponent<PlayerMotor>();
+
     }
 
     void Update()
@@ -37,6 +38,9 @@ public class PlayerController : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(myRay, out hit, 100))
         {
+            if (EventSystem.current.IsPointerOverGameObject())
+                return;
+
             interactable = hit.collider.GetComponent<Interactable>();
             if (interactable != null && wailaDisplayActive == false)
             {

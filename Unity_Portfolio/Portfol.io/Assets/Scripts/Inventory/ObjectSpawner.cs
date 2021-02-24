@@ -79,10 +79,14 @@ public class ObjectSpawner : MonoBehaviour
         GameObject obj = Instantiate(pickupPrefab, transform);
         obj.transform.position = position;
         Pickup pickup = obj.GetComponent<Pickup>();
-        obj.GetComponentInChildren<MeshFilter>().sharedMesh = item.model.gameObject.GetComponent<MeshFilter>().sharedMesh;
-        obj.GetComponentInChildren<MeshRenderer>().sharedMaterial = item.model.gameObject.GetComponent<MeshRenderer>().sharedMaterial;
+        if(item.model.gameObject.GetComponent<MeshFilter>() != null)
+        {
+            obj.GetComponentInChildren<MeshFilter>().sharedMesh = item.model.gameObject.GetComponent<MeshFilter>().sharedMesh;
+            obj.GetComponentInChildren<MeshRenderer>().sharedMaterial = item.model.gameObject.GetComponent<MeshRenderer>().sharedMaterial;
+        }
         pickup.count = count;
         pickup.item = item;
+
     }
 
     public void VisualizeWall()
@@ -180,7 +184,6 @@ public class ObjectSpawner : MonoBehaviour
         else if (item.GetType().IsSubclassOf(typeof(Tool))) //item.GetType().ToString() == "Tool"
 
         {
-            Debug.Log(Quaternion.Euler(item.materializedRotation) + "   " + item.materializedRotation);
             //materializedObject = Instantiate(item.model, palmPlacement.transform.position + item.materializedPlacement, Quaternion.Euler(item.materializedRotation + palmPlacement.rotation.eulerAngles), palmPlacement.transform );
             materializedObject = Instantiate(item.model, palmPlacement.transform);
             //0,0,0 position

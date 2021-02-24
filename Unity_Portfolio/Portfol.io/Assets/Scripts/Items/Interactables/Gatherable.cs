@@ -13,7 +13,7 @@ public class Gatherable : Interactable
     public Item gatheringTool;
 
     public int hitPoints = 10;
-    public int cooldown = 1;
+    public float cooldown = 1;
 
     private void Start()
     {
@@ -50,8 +50,6 @@ public class Gatherable : Interactable
         }
         else
         {
-            Debug.Log("Jump");
-
             anim.ResetTrigger("Jump");
             anim.SetTrigger("Jump");
 
@@ -64,8 +62,52 @@ public class Gatherable : Interactable
 
     IEnumerator Cooldown()
     {
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(cooldown);
         hasInteracted = false;
+    }
+
+    int CalculateAmountOfReceivedItems(int index)
+    {
+        int count = 0;
+
+        if (loot_count.Length == 0 && loot_chance.Length == 0)
+        {
+            return 1;
+        }
+
+        if (loot_count.Length == 0)
+        {
+            int result = Random.Range(0, 100);
+
+            if (loot_chance.Length == 0)
+                count++;
+
+            if (result <= loot_chance[index])
+            {
+                count++;
+            }
+
+            return count;
+        }
+        else
+        {
+            for (int i = 0; i < loot_count[index]; i++)
+            {
+                int result = Random.Range(0, 100);
+
+                if (loot_chance.Length == 0)
+                    count++;
+
+                if (result <= loot_chance[index])
+                {
+                    count++;
+                }
+            }
+
+            return count;
+        }
+
+        return 0;
     }
 
     void CreatePickups()
@@ -76,14 +118,7 @@ public class Gatherable : Interactable
         {
             int count = 0;
             //Roll chance for each item
-            for (int i = 0; i < loot_count[index]; i++)
-            {
-                int result = Random.Range(0, 100);
-                if (result <= loot_chance[index])
-                {
-                    count++;
-                }
-            }
+            count = CalculateAmountOfReceivedItems(index);
 
             if (count > 0)
             {
