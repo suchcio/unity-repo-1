@@ -31,13 +31,16 @@ public class PlayerStats : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!other.gameObject.name.Contains("Sphere"))
+        if (other == null)
+            return;
+
+        Projectile newProj = other.gameObject.GetComponent<Projectile>();
+        if (newProj == null)
         {
-            Debug.Log(other.gameObject.name);
             return;
         }
 
-        int damage = other.gameObject.GetComponent<Projectile>().damage;
+        int damage = newProj.damage;
         TakeDamage(damage);
         Destroy(other.gameObject);
     }
