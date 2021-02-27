@@ -16,6 +16,7 @@ public class Turret : Gatherable
     public int minAngle = -90;
     public int dispersion = 0;
     public int shootCooldown = 3;
+    public int maxPierce = 2;
 
     Quaternion startingRotation;
     int currentAngle = 0;
@@ -27,42 +28,22 @@ public class Turret : Gatherable
     LineRenderer line;
     float chordLength;
 
+    List<GameObject> exposedEnemy;
+    List<GameObject> unexposedEnemy;
+    List<GameObject> collidingObject;
+
     private void Start()
     {
         line = GetComponent<LineRenderer>();
         startingRotation = vertical.transform.rotation;
-        //circularSegmentHeight = range * (1 - Mathf.Cos(Mathf.Deg2Rad * hitAngle / 2));
         chordLength = ((int)(2 * range * Mathf.Sin(Mathf.Deg2Rad * hitAngle / 2)));
         line.widthMultiplier = chordLength;
 
         line.enabled = true;
-        InvokeRepeating("ScanForEnemy", 0f, 0.05f);
+        InvokeRepeating("ScanForEnemy", 0f, 0.01f);
         InvokeRepeating("RotateTurret", 0f, 0.05f);
-        //InvokeRepeating("visualize", 0f, 2f);
-
-        //Wall visualizer
-        holder = Instantiate(new GameObject());
-        
     }
     
-    void visualize()
-    {
-        foreach(Transform obj in holder.gameObject.transform)
-        {
-            Destroy(obj.gameObject);
-        }
-
-        for (int i = 0; i < 50; i++)
-        {
-            for (int j = 0; j < 50; j++)
-            {
-                GameObject newObj = Instantiate(visualizePrefab, holder.transform);
-                newObj.transform.name = $"{i} {j}";
-                newObj.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
-                newObj.transform.localPosition = new Vector3(0.1f * i + 3.5f, 0.5f, 0.1f * j - 10);
-            }
-        }
-    }
     
     IEnumerator shotCooldown()
     {
@@ -73,7 +54,6 @@ public class Turret : Gatherable
     
     void ScanForEnemy()
     {
-        RaycastHit hit;
         RaycastHit[] hits;
         bool foundEnemy = false;
 
@@ -99,17 +79,20 @@ public class Turret : Gatherable
             hits = Physics.RaycastAll(transform.position + new Vector3(0, 0.5f, 0), rotatedRayTargetPoint.normalized, range);
             if (hits.Length > 0)
             {
-                RaycastHit nearestEnemy = FindNearestEnemy(hits);
-                TargetEnemy(nearestEnemy);
-                if (!onCooldown)
-                {
-                    StartCoroutine("shotCooldown");
-                    ShootEnemy(nearestEnemy);
-                }
-                foundEnemy = true;
-                break;
+                //RaycastHit nearestEnemy = FindNearestEnemy(hits);
+                //FaceEnemy(nearestEnemy, vertical.transform);
+                //FaceEnemy(nearestEnemy, horizontal.transform);
+                //if (!onCooldown)
+                //{
+                //    StartCoroutine("shotCooldown");
+                //    ShootEnemy(nearestEnemy);
+                //}
+                //foundEnemy = true;
+                //break;
             }
+            SegregateTargets(hits);
         }
+
 
         if (!foundEnemy)
         {
@@ -130,20 +113,16 @@ public class Turret : Gatherable
         horizontal.transform.Rotate(new Vector3(0, 0, currentAngle));
     }
 
-    private void TargetEnemy(RaycastHit nearestEnemy)
+    public void FaceEnemy(RaycastHit nearestEnemy, Transform obj)
     {
         CancelInvoke("RotateTurret");
-        Quaternion oldRotation = horizontal.transform.rotation;
-        var lookPos = nearestEnemy.transform.position - transform.position;
+        Quaternion oldRotation = obj.rotation;
+        var lookPos = nearestEnemy.transform.position - obj.position;
         lookPos.y = 0;
 
-        //Mid part
         var rotation = Quaternion.LookRotation(lookPos);
-        horizontal.transform.rotation = Quaternion.Slerp(horizontal.transform.rotation, rotation, Time.deltaTime * 5f);
-        horizontal.transform.rotation = Quaternion.Euler(new Vector3(oldRotation.eulerAngles.x, horizontal.transform.rotation.eulerAngles.y, oldRotation.eulerAngles.z));
-        //Top part
-        vertical.transform.rotation = Quaternion.Slerp(vertical.transform.rotation, rotation, Time.deltaTime * 5f);
-        vertical.transform.rotation = Quaternion.Euler(new Vector3(oldRotation.eulerAngles.x, vertical.transform.rotation.eulerAngles.y, oldRotation.eulerAngles.z));
+        obj.rotation = Quaternion.Slerp(horizontal.transform.rotation, rotation, Time.deltaTime * 5f);
+        obj.rotation = Quaternion.Euler(new Vector3(oldRotation.eulerAngles.x, obj.rotation.eulerAngles.y, oldRotation.eulerAngles.z));
     }
 
     //Single raycast
@@ -167,6 +146,27 @@ public class Turret : Gatherable
             }
         }
         return nearestEnemy;
+    }
+
+    void SegregateTargets(RaycastHit[] hits)
+    {
+        //int currentPierce = 0;
+        //foreach(var hit in hits)
+        //{
+        //    // Wall
+        //    if (hit.transform.tag != "Enemy")
+        //    {
+        //        currentPierce = maxPierce;
+        //    }
+        //    else
+        //    {
+        //        if(currentPierce < maxPierce)
+        //        {
+        //            exposedEnemy.Add(hit.transform.gameObject);
+        //            currentPierce++;
+        //        }
+        //    }
+        //}
     }
     
     void RotateTurret()

@@ -7,22 +7,50 @@ public class LevelGenerator : MonoBehaviour
     public int mapSizeY = 100;
     public int mapSizeX = 100;
 
+    public Vector3 startPos;
+
     public GameObject[] objects;
     public GameObject[,] map;
+    public Terrain terrain;
 
     public int runGeneratorTimes = 1;
     SpawnCondition spawnCondition = null;
 
+    private TerrainDetector terrainDetector;
 
     public void SpawnObject(GameObject obj, Vector3 location)
     {
-        int x = (int) location.x;
-        int y = (int) location.z;
-        map[x,y] = Instantiate(obj, location, Quaternion.identity, transform);
+        int x = (int)location.x;
+        int y = (int)location.z;
+        map[x, y] = Instantiate(obj, location + startPos, Quaternion.identity, transform);
+    }
+
+    public bool IsGrass(Vector3 pos){
+
+        int terrainTextureIndex = terrainDetector.GetActiveTerrainTextureIdx(pos + startPos, 1, 0.1f);
+        switch (terrainTextureIndex)
+        {
+            case 0:
+                return true;
+            case 1:
+            default:
+                return false;
+        }
     }
 
     public bool FieldIsDenied(int range, Vector3 current)
     {
+        //Check if its placeable
+        if (!IsGrass(current))
+        {
+            Debug.Log("Not grass : " + current);
+            return true;
+        }
+        else
+        {
+            Debug.Log("Grass : " + current);
+        }
+        //Check if field has object on it
         if (map[(int)current.x, (int)current.z] != null)
             return true;
         for(int x = -range; x < range; x++)
@@ -138,13 +166,14 @@ public class LevelGenerator : MonoBehaviour
 
             if (!isDenied)
                 SpawnObject(obj, desiredPosition);
-            else
-                Debug.Log($"Couldn't spawn {obj.name}!");
+            //else
+                //Debug.Log($"Couldn't spawn {obj.name}!");
         }
     }
 
     void Start()
     {
+        terrainDetector = new TerrainDetector();
         map = new GameObject[mapSizeX, mapSizeY];
 
         for(int i = 0; i < runGeneratorTimes; i++)

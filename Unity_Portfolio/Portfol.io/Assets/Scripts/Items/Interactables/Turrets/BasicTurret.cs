@@ -5,7 +5,8 @@ using UnityEngine;
 public class BasicTurret : Turret
 {
     public GameObject shotPrefab;
-    float projectileLifeTime = 3;
+    public float projectileLifeTime = 3;
+    public int projectileSpeed = 1000;
     Queue<GameObject> projectiles = new Queue<GameObject>();
 
     public override void ShootEnemy(RaycastHit hit)
@@ -13,10 +14,11 @@ public class BasicTurret : Turret
         GameObject newShot = Instantiate(shotPrefab, transform);
         newShot.transform.position = vertical.transform.position;
         newShot.transform.Rotate(new Vector3(0, 90, 0));
+        FaceEnemy(hit, newShot.transform);
 
         Rigidbody newRigidBody = newShot.AddComponent<Rigidbody>();
         newRigidBody.useGravity = false;
-        newRigidBody.AddForce(-vertical.transform.up * 5000);
+        newRigidBody.AddForce(-vertical.transform.up * projectileSpeed);
         //newShot.GetComponent<Rigidbody>().AddForce(vertical.transform.up * 500);
         projectiles.Enqueue(newShot);
         StartCoroutine("ProjLife");

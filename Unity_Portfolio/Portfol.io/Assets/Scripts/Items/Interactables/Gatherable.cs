@@ -22,7 +22,7 @@ public class Gatherable : Interactable
 
     public override void Interact()
     {
-        if (gatheringTool == null)
+        if (gatheringTool == null || Inventory.instance.equippedItem == null)
             return;
 
         if (Inventory.instance.equippedItem.GetType() == gatheringTool.GetType()) // && gathering tool level?
