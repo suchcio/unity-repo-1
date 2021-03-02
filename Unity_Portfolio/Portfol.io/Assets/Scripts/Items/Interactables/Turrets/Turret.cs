@@ -27,6 +27,7 @@ public class Turret : Gatherable
     GameObject holder;
     LineRenderer line;
     float chordLength;
+    bool shootAble = false;
 
     List<GameObject> exposedEnemy;
     List<GameObject> unexposedEnemy;
@@ -44,7 +45,7 @@ public class Turret : Gatherable
         line.widthMultiplier = chordLength;
 
         line.enabled = true;
-        InvokeRepeating("ScanForEnemy", 0f, 0.01f);
+        InvokeRepeating("ScanForEnemy", 0f, 0.05f);
         InvokeRepeating("RotateTurret", 0f, 0.05f);
     }
     
@@ -84,11 +85,9 @@ public class Turret : Gatherable
             hits = Physics.RaycastAll(transform.position + new Vector3(0, 0.5f, 0), rotatedRayTargetPoint.normalized, range);
             if (hits.Length > 0)
             {
-                SegregateTargets(hits);
+                SegregateTargets(hits, i);
             }
         }
-
-        Debug.Log($" Count of colliding objects {collidingObject.Count}   Count of exposed targets {exposedEnemy.Count}");
 
         if (exposedEnemy.Count == 0)
         {
@@ -107,7 +106,8 @@ public class Turret : Gatherable
             if (!onCooldown)
             {
                 StartCoroutine("shotCooldown");
-                ShootEnemy(nearestEnemy);
+                if(shootAble)
+                    ShootEnemy(nearestEnemy);
             }
         }
 
@@ -187,9 +187,8 @@ public class Turret : Gatherable
     //    return nearestEnemy;
     //}
 
-    void SegregateTargets(RaycastHit[] hits)
+    void SegregateTargets(RaycastHit[] hits, int index)
     {
-        Debug.Log($"Segregating : {hits.Length}!");
         bool behindWall = false;
         for(int i = 0; i < hits.Length; i++)
         //for(int i = hits.Length - 1; i >= 0; i--)
@@ -207,10 +206,12 @@ public class Turret : Gatherable
                 if (!behindWall)
                 {
                     exposedEnemy.Add(hits[i].transform.gameObject);
+                    shootAble = true;
                 }
                 else
                 {
                     unexposedEnemy.Add(hits[i].transform.gameObject);
+                    shootAble = false;
                 }
             }
         }
