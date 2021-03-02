@@ -11,7 +11,6 @@ public class LevelGenerator : MonoBehaviour
 
     public GameObject[] objects;
     public GameObject[,] map;
-    public Terrain terrain;
 
     public int runGeneratorTimes = 1;
     SpawnCondition spawnCondition = null;
@@ -43,13 +42,9 @@ public class LevelGenerator : MonoBehaviour
         //Check if its placeable
         if (!IsGrass(current))
         {
-            Debug.Log("Not grass : " + current);
             return true;
         }
-        else
-        {
-            Debug.Log("Grass : " + current);
-        }
+
         //Check if field has object on it
         if (map[(int)current.x, (int)current.z] != null)
             return true;
@@ -141,21 +136,13 @@ public class LevelGenerator : MonoBehaviour
                 { 
                     desiredPosition = RandomisePos();
                     acceptAttempt++;
+                    isDenied = true;
+                    isAccepted = false;
                 }
             }
 
-            if (isDenied)
-            {
-
-            }
-            else
-            {
-                //Found acceptable location
-                //Or
-                //Found not denied location at last
-            }
-
             //If priority spawn failed
+            //true && 0 , [1] denied, 1, [2] denied, 2, [3] denied, 3
             while (isDenied && denyAttempt != spawnCondition.denyRetry)
             {
                 desiredPosition = RandomisePos();
@@ -173,7 +160,7 @@ public class LevelGenerator : MonoBehaviour
 
     void Start()
     {
-        terrainDetector = new TerrainDetector();
+        terrainDetector = new TerrainDetector(true);
         map = new GameObject[mapSizeX, mapSizeY];
 
         for(int i = 0; i < runGeneratorTimes; i++)

@@ -9,19 +9,18 @@ public class MapGenerator : MonoBehaviour
 
 
     //    public Transform tilePrefab;
-    //    public Transform wallPrefab;
-    //    public Vector2 mapSize;
+          public Transform wallPrefab;
+          public Vector2 mapSize;
 
     //    [Range(0,1)]
     //    public float outlinePercent;
 
-    //    void Start()
-    //    {
-    //        Transform HolderWall = CreateHolder("Walls");
+    void Start()
+    {
+        GenerateMapWithRotation();
+        //NavMeshBuilder.BuildNavMesh();
+    }
 
-    //        GenerateMapWithRotation();
-    //        //NavMeshBuilder.BuildNavMesh();
-    //    }
     //    Transform CreateHolder(string HolderName)
     //    {
     //        if (transform.Find(HolderName))
@@ -121,55 +120,30 @@ public class MapGenerator : MonoBehaviour
     //        }
     //    }
 
-    //    public void GenerateMapWithRotation()
-    //    {
-
-    //        string holderName = "Generated Map";
-    //        if (transform.Find(holderName))
-    //        {
-    //            //Destroy old tiles
-    //            DestroyImmediate(transform.Find(holderName).gameObject);
-    //        }
-
-    //        Transform mapHolder = new GameObject(holderName).transform;
-    //        mapHolder.parent = transform;
-
-    //        for(int x = 0; x < mapSize.x; x++)
-    //        {
-    //            for(int y = 0; y < mapSize.y; y++)
-    //            {
-    //                //Wall generation
-    //                if (!((y == (int)(mapSize.y / 2 ) && (x == 0 || x == mapSize.x-1)) || (x == (int)(mapSize.y / 2 ) && (y == 0 ||  y == mapSize.y-1))))
-    //                {
-    //                    if (x == 0)
-    //                    {
-    //                        Transform newWall = Instantiate(wallPrefab, new Vector3(-mapSize.x / 2 + x, 0, -mapSize.y / 2 + y + 0.5f), Quaternion.Euler(Vector3.up * 90)) as Transform;
-    //                        newWall.parent = mapHolder;
-    //                    }
-    //                    if (x == mapSize.x - 1)
-    //                    {
-    //                        Transform newWall = Instantiate(wallPrefab, new Vector3(-mapSize.x / 2 + x + 1, 0, -mapSize.y / 2 + y + 0.5f), Quaternion.Euler(Vector3.up * 90)) as Transform;
-    //                        newWall.parent = mapHolder;
-    //                    }
-    //                    if (y == 0)
-    //                    {
-    //                        Transform newWall = Instantiate(wallPrefab, new Vector3(-mapSize.x / 2 + 0.5f + x, 0, -mapSize.y / 2 + y), Quaternion.Euler(Vector3.right * 1)) as Transform;
-    //                        newWall.parent = mapHolder;
-    //                    }
-    //                    if (y == mapSize.y - 1)
-    //                    {
-    //                        Transform newWall = Instantiate(wallPrefab, new Vector3(-mapSize.x / 2 + 0.5f + x, 0, -mapSize.y / 2 + y + 1), Quaternion.Euler(Vector3.right * 1)) as Transform;
-    //                        newWall.parent = mapHolder;
-    //                    }
-    //                }
-
-
-    //                //Tile generation
-    //                //Vector3 tilePosition = new Vector3(-mapSize.x / 2 + 0.5f + x, 0, -mapSize.y / 2 + 0.5f + y);
-    //                //Transform newTile = Instantiate(tilePrefab, tilePosition, Quaternion.Euler(Vector3.right * 90)) as Transform;
-    //                //newTile.localScale = Vector3.one * (1 - outlinePercent);
-    //                //newTile.parent = mapHolder;
-    //            }
-    //        }
-    //    }
+    public void GenerateMapWithRotation()
+    {
+        for (int x = 0; x < mapSize.x; x++)
+        {
+            for (int y = 0; y < mapSize.y; y++)
+            {
+                //Wall generation
+                if (x == 0)
+                {
+                    Transform newWall = Instantiate(wallPrefab, new Vector3(-mapSize.x / 2 + x,  wallPrefab.position.y, -mapSize.y / 2 + y + 0.5f), Quaternion.Euler(Vector3.down * -90), transform) as Transform;
+                }
+                if (x == mapSize.x - 1)
+                {
+                    Transform newWall = Instantiate(wallPrefab, new Vector3(-mapSize.x / 2 + x + 1, wallPrefab.position.y, -mapSize.y / 2 + y + 0.5f), Quaternion.Euler(Vector3.up * -90), transform) as Transform;
+                }
+                if (y == 0)
+                {
+                    Transform newWall = Instantiate(wallPrefab, new Vector3(-mapSize.x / 2 + 0.5f + x, wallPrefab.position.y, -mapSize.y / 2 + y), Quaternion.Euler(Vector3.up), transform) as Transform;
+                }
+                if (y == mapSize.y - 1)
+                {
+                    Transform newWall = Instantiate(wallPrefab, new Vector3(-mapSize.x / 2 + 0.5f + x, wallPrefab.position.y, -mapSize.y / 2 + y + 1), Quaternion.Euler(Vector3.up * 180), transform) as Transform;
+                }
+            }
+        }
+    }
 }

@@ -18,6 +18,21 @@ public class TerrainDetector
         numTextures = splatmapData.Length / (alphamapWidth * alphamapHeight);
     }
 
+    public TerrainDetector(bool MultipleTerrains)
+    {
+        foreach(var terrain in Terrain.activeTerrains)
+        {
+            if (terrain.name == "Main-Terrain")
+                terrainData = terrain.terrainData;
+        }
+
+        alphamapWidth = terrainData.alphamapWidth;
+        alphamapHeight = terrainData.alphamapHeight;
+
+        splatmapData = terrainData.GetAlphamaps(0, 0, alphamapWidth, alphamapHeight);
+        numTextures = splatmapData.Length / (alphamapWidth * alphamapHeight);
+    }
+
     private Vector3 ConvertToSplatMapCoordinate(Vector3 worldPosition)
     {
         Vector3 splatPosition = new Vector3();

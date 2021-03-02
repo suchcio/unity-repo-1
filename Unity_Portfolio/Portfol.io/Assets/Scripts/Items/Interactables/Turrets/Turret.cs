@@ -121,18 +121,6 @@ public class Turret : Gatherable
         horizontal.transform.Rotate(new Vector3(0, 0, currentAngle));
     }
 
-    //public void FaceEnemy(RaycastHit nearestEnemy, Transform obj)
-    //{
-    //    CancelInvoke("RotateTurret");
-    //    Quaternion oldRotation = obj.rotation;
-    //    var lookPos = nearestEnemy.transform.position - obj.position;
-    //    lookPos.y = 0;
-
-    //    var rotation = Quaternion.LookRotation(lookPos);
-    //    obj.rotation = Quaternion.Slerp(horizontal.transform.rotation, rotation, Time.deltaTime * 5f);
-    //    obj.rotation = Quaternion.Euler(new Vector3(oldRotation.eulerAngles.x, obj.rotation.eulerAngles.y, oldRotation.eulerAngles.z));
-    //}
-
     public void FaceEnemy(GameObject nearestEnemy, Transform obj)
     {
         CancelInvoke("RotateTurret");
@@ -167,32 +155,10 @@ public class Turret : Gatherable
         return nearestEnemy;
     }
 
-    //RaycastHit FindNearestEnemy(RaycastHit[] hits)
-    //{
-    //    int index = 0;
-    //    float distance = Vector3.Distance(transform.position, hits[0].transform.position);
-    //    RaycastHit nearestEnemy = hits[0];
-
-    //    foreach (var hitTarget in hits)
-    //    {
-    //        if (hitTarget.transform.tag != "Enemy")
-    //            continue;
-    //        float newDistance = Vector3.Distance(transform.position, hitTarget.transform.position);
-    //        if (newDistance < distance)
-    //        {
-    //            distance = newDistance;
-    //            nearestEnemy = hits[index++];
-    //        }
-    //    }
-    //    return nearestEnemy;
-    //}
-
     void SegregateTargets(RaycastHit[] hits, int index)
     {
         bool behindWall = false;
         for(int i = 0; i < hits.Length; i++)
-        //for(int i = hits.Length - 1; i >= 0; i--)
-        //foreach (var hit in hits)
         {
             // Wall
             if (hits[i].transform.tag == "Wall")
@@ -246,8 +212,6 @@ public class Turret : Gatherable
 
 
     }
-
-    //public virtual void ShootEnemy(RaycastHit hit) { }
 
     public virtual void ShootEnemy(GameObject hit) { }
 }
